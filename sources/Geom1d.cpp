@@ -75,27 +75,34 @@ void Geom1d::GradX(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x, Matr
     }
 }
 
+
 void Geom1d::SetNodes(const VecInt& nodes) {
     if (nodes.rows() != 2) DebugStop();
-        fNodeIndices = nodes;
+    fNodeIndices = nodes;
 }
 
-void Geom1d::GetNodes(VecInt& nodes) {
+
+void Geom1d::GetNodes(VecInt &nodes) {
     nodes = fNodeIndices;
 }
 
-int Geom1d::NodeIndex(int node) {
+int Geom1d::NodeIndex(int node){
+    if(node<0 || node > 2) DebugStop();
     return fNodeIndices[node];
 }
 
-int Geom1d::NumNodes() {
-    return nCorners;
+
+int Geom1d::NumNodes(){
+    return nCorners;    
 }
 
-GeoElementSide Geom1d::Neighbour(int side) {
+GeoElementSide Geom1d::Neighbour(int side){
+    if(side <0 || side>2) DebugStop();
     return fNeighbours[side];
 }
 
-void Geom1d::SetNeighbour(int side, const GeoElementSide& neighbour) {
-    fNeighbours[side] = neighbour;
+
+void Geom1d::SetNeighbour(int side, const GeoElementSide &neighbour) {
+    if(side < 0 || side > 2) DebugStop();
+    fNeighbours[side]=neighbour;
 }
