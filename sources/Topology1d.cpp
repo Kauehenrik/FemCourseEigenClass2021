@@ -5,7 +5,7 @@
  */
 
 #include "Topology1d.h"
-///\cond
+ ///\cond
 #include <iostream>
 ///\endcond
 
@@ -21,8 +21,8 @@ const int Topology1d::Dimension;
 
 
 int Topology1d::NSideNodes(int side) {
-    if(side < 0 || side > 2) DebugStop();
-    static int nsidenodes[3] = {1, 1, 2};
+    if (side < 0 || side > 2) DebugStop();
+    static int nsidenodes[3] = { 1, 1, 2 };
     return nsidenodes[side];
 }
 
@@ -30,7 +30,7 @@ int Topology1d::SideNodeLocIndex(int side, int node) {
     if (side < 2 && node == 0) return side;
     if (side == 2 && node < 2) return node;
     std::cout << "Topology1d::SideNodeIndex inconsistent side or node " << side
-            << ' ' << node << std::endl;
+        << ' ' << node << std::endl;
     DebugStop();
     return -1;
 }

@@ -6,7 +6,7 @@
 
 #include "NullStatement.h"
 
-///\cond
+ ///\cond
 #include <functional>
 #include <string.h>
 ///\endcond
@@ -18,15 +18,15 @@ NullStatement::NullStatement(int materialid) {
     this->SetMatID(materialid);
 }
 
-NullStatement::NullStatement(const NullStatement &copy) : MathStatement(copy) {
+NullStatement::NullStatement(const NullStatement& copy) : MathStatement(copy) {
 }
 
-NullStatement &NullStatement::operator=(const NullStatement &copy) {
+NullStatement& NullStatement::operator=(const NullStatement& copy) {
     MathStatement::operator=(copy);
     return *this;
 }
 
-NullStatement *NullStatement::Clone() const {
+NullStatement* NullStatement::Clone() const {
     return new NullStatement(*this);
 }
 
@@ -44,7 +44,7 @@ int NullStatement::VariableIndex(const PostProcVar var) const {
     return -1;
 }
 
-NullStatement::PostProcVar NullStatement::VariableIndex(const std::string &name) {
+NullStatement::PostProcVar NullStatement::VariableIndex(const std::string& name) {
     if (!strcmp("Sol", name.c_str())) return ESol;
     if (!strcmp("DSol", name.c_str())) return EDSol;
     else {
@@ -67,12 +67,12 @@ int NullStatement::NSolutionVariables(const PostProcVar var) {
 }
 
 
-void NullStatement::Contribute(IntPointData &data, double weight, MatrixDouble &EK, MatrixDouble &EF) const {
+void NullStatement::Contribute(IntPointData& data, double weight, MatrixDouble& EK, MatrixDouble& EF) const {
     EK.setZero();
     EF.setZero();
 }
 
-void NullStatement::PostProcessSolution(const IntPointData &data, const int var, VecDouble &Solout) const {
+void NullStatement::PostProcessSolution(const IntPointData& data, const int var, VecDouble& Solout) const {
     VecDouble sol = data.solution;
     int solsize = sol.size();
     int rows = data.dsoldx.rows();
@@ -83,38 +83,38 @@ void NullStatement::PostProcessSolution(const IntPointData &data, const int var,
     int nstate = this->NState();
 
     switch (var) {
-        case 0: //None
-        {
-            std::cout << " Var index not implemented " << std::endl;
-            DebugStop();
-        }
+    case 0: //None
+    {
+        std::cout << " Var index not implemented " << std::endl;
+        DebugStop();
+    }
 
-        case 1: //ESol
-        {
-            Solout.resize(nstate);
-            for (int i = 0; i < nstate; i++) {
-                Solout[i] = sol[i];
+    case 1: //ESol
+    {
+        Solout.resize(nstate);
+        for (int i = 0; i < nstate; i++) {
+            Solout[i] = sol[i];
+        }
+    }
+    break;
+
+    case 2: //EDSol
+    {
+        Solout.resize(rows * cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Solout[i * cols + j] = gradu(i, j);
             }
         }
-            break;
 
-        case 2: //EDSol
-        {
-            Solout.resize(rows * cols);
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    Solout[i * cols + j] = gradu(i, j);
-                }
-            }
+    }
+    break;
 
-        }
-            break;
-
-        default:
-        {
-            std::cout << " Var index not implemented " << std::endl;
-            DebugStop();
-        }
+    default:
+    {
+        std::cout << " Var index not implemented " << std::endl;
+        DebugStop();
+    }
     }
 }
 

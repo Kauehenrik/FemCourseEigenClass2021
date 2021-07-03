@@ -4,13 +4,13 @@
  * and open the template in the editor.
  */
 
-///\cond
+ ///\cond
 #include <iostream> 
 ///\endcond
 #include "IntRule1d.h"
 #include "IntRuleQuad.h"
 
-IntRuleQuad::IntRuleQuad(){
+IntRuleQuad::IntRuleQuad() {
 }
 
 IntRuleQuad::IntRuleQuad(int order) {
@@ -89,12 +89,11 @@ void IntRuleQuad::SetOrder(int order) {
         break;
     }
 }
-
-void IntRuleQuad::gaulegQuad(const double x1, const double x2, VecDouble &co, VecDouble &w) {
+void IntRuleQuad::gaulegQuad(const double x1, const double x2, VecDouble& co, VecDouble& w) {
     IntRule1d x;
     IntRule1d y;
-    
-    int n = w.size();   
+
+    int n = w.size();
 
     VecDouble cox(n);
     VecDouble coy(n);
@@ -104,8 +103,8 @@ void IntRuleQuad::gaulegQuad(const double x1, const double x2, VecDouble &co, Ve
 
     x.gauleg(x1, x2, cox, wx);
     y.gauleg(x1, x2, coy, wy);
-    
-    co.resize(2*n*n);
+
+    co.resize(2 * n * n);
     w.resize(n * n);
 
     for (int i = 0; i < n; i++) {

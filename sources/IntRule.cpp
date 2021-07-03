@@ -5,7 +5,7 @@
  */
 
 #include "IntRule.h"
-///\cond
+ ///\cond
 #include <iostream> 
 #include <vector> 
 #include <cmath>
@@ -14,8 +14,8 @@
 
 using namespace std;
 
-IntRule::IntRule() : fPoints(), fWeights(){
-        fOrder = 0;
+IntRule::IntRule() : fPoints(), fWeights() {
+    fOrder = 0;
 
 
 }
@@ -34,7 +34,7 @@ IntRule::IntRule(const IntRule& copy) {
     fWeights = copy.fWeights;
 }
 
-IntRule &IntRule::operator=(const IntRule &cp) {
+IntRule& IntRule::operator=(const IntRule& cp) {
     fOrder = cp.fOrder;
     fPoints = cp.fPoints;
     fWeights = cp.fWeights;
@@ -45,7 +45,7 @@ int IntRule::NPoints() const {
     return fWeights.size();
 }
 
-void IntRule::Print(std::ostream &out) const {
+void IntRule::Print(std::ostream& out) const {
     VecDouble co(fPoints.cols());
     double w;
 

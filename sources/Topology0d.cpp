@@ -5,7 +5,7 @@
  */
 
 #include "Topology0d.h"
-///\cond
+ ///\cond
 #include <iostream>
 ///\endcond
 
@@ -21,7 +21,7 @@ const int Topology0d::Dimension;
 
 
 int Topology0d::NSideNodes(int side) {
-    if(side != 0) DebugStop();
+    if (side != 0) DebugStop();
     return 1;
 }
 

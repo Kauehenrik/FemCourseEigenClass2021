@@ -11,11 +11,11 @@ double MathStatement::gBigNumber = 1.e12;
 MathStatement::MathStatement() : MathDim(0) {
 }
 
-MathStatement::MathStatement(const MathStatement &copy) {
+MathStatement::MathStatement(const MathStatement& copy) {
     matid = copy.matid;
 }
 
-MathStatement &MathStatement::operator=(const MathStatement &copy) {
+MathStatement& MathStatement::operator=(const MathStatement& copy) {
     matid = copy.matid;
     return *this;
 }
@@ -23,17 +23,17 @@ MathStatement &MathStatement::operator=(const MathStatement &copy) {
 MathStatement::~MathStatement() {
 }
 
-void MathStatement::Axes2XYZ(const MatrixDouble &dudaxes, MatrixDouble &dudx, const MatrixDouble &axesv) const {
-        MatrixDouble axesT;
-        axesT = axesv.transpose();
+void MathStatement::Axes2XYZ(const MatrixDouble& dudaxes, MatrixDouble& dudx, const MatrixDouble& axesv) const {
+    MatrixDouble axesT;
+    axesT = axesv.transpose();
 
-        if (dudx.rows() != axesT.rows() || dudx.cols() != dudaxes.cols()) {
-            dudx.resize(axesT.rows(), dudaxes.cols());
-        }
-        dudx = axesT*dudaxes;
+    if (dudx.rows() != axesT.rows() || dudx.cols() != dudaxes.cols()) {
+        dudx.resize(axesT.rows(), dudaxes.cols());
+    }
+    dudx = axesT * dudaxes;
 }
 
-void MathStatement::Print(std::ostream &out) {
+void MathStatement::Print(std::ostream& out) {
     out << "Material: " << this->GetMatID() << std::endl;
     out << "Big number: " << gBigNumber << std::endl << std::endl;
 

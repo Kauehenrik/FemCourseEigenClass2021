@@ -4,12 +4,12 @@
  * and open the template in the editor.
  */
 
-///\cond
+ ///\cond
 #include <iostream> 
 ///\endcond
 #include "IntRuleTriangle.h"
 
-IntRuleTriangle::IntRuleTriangle(){
+IntRuleTriangle::IntRuleTriangle() {
 
 }
 

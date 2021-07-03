@@ -5,7 +5,7 @@
  */
 
 #include "TopologyTriangle.h"
-///\cond
+ ///\cond
 #include <iostream>
 ///\endcond
 
@@ -20,7 +20,7 @@ const int TopologyTriangle::Dimension;
 
 
 int TopologyTriangle::NSideNodes(int side) {
-    int nsidenodes[7] = {1, 1, 1, 2, 2, 2, 3};
+    int nsidenodes[7] = { 1, 1, 1, 2, 2, 2, 3 };
     return nsidenodes[side];
 }
 
@@ -29,7 +29,7 @@ int TopologyTriangle::SideNodeLocIndex(int side, int node) {
     if (side >= 3 && side < 6 && node < 2) return (side - 3 + node) % 3;
     if (side == 6 && node < 3) return node;
     std::cout << "TopologyTriangle::SideNodeIndex inconsistent side or node " << side
-            << ' ' << node << std::endl;
+        << ' ' << node << std::endl;
     return -1;
 }
 

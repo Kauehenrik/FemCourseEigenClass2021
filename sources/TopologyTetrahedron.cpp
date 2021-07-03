@@ -6,7 +6,7 @@
 
 #include "TopologyTetrahedron.h"
 
-// Number of sides associated with tetrahedron elements elements
+ // Number of sides associated with tetrahedron elements elements
 const int TopologyTetrahedron::nSides;
 
 // Number of corner nodes associated with tetrahedron elements
@@ -17,7 +17,7 @@ const int TopologyTetrahedron::Dimension;
 
 
 int TopologyTetrahedron::NSideNodes(int side) {
-    int nsidenodes[15] = {1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4};
+    int nsidenodes[15] = { 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4 };
     return nsidenodes[side];
 }
 
@@ -42,7 +42,7 @@ int TopologyTetrahedron::SideNodeLocIndex(int side, int node) {
     if (side >= 10 && side < 14 && node < 3) return FaceNodes[side - 10][node];
     if (side == 14 && node < 4) return node;
     std::cout << "ShapeTetrahedron::SideNodeIndex inconsistent side or node " << side
-            << ' ' << node << std::endl;
+        << ' ' << node << std::endl;
     DebugStop();
     return -1;
 }

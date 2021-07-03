@@ -5,14 +5,14 @@
  */
 
 #include "L2Projection.h"
-///\cond
+ ///\cond
 #include <string.h>
 ///\endcond
 
 L2Projection::L2Projection() {
 }
 
-L2Projection::L2Projection(int bctype, int materialid, MatrixDouble &proj, MatrixDouble Val1, MatrixDouble Val2) {
+L2Projection::L2Projection(int bctype, int materialid, MatrixDouble& proj, MatrixDouble Val1, MatrixDouble Val2) {
     projection = proj;
     BCType = bctype;
     BCVal1 = Val1;
@@ -20,7 +20,7 @@ L2Projection::L2Projection(int bctype, int materialid, MatrixDouble &proj, Matri
     this->SetMatID(materialid);
 }
 
-L2Projection::L2Projection(const L2Projection &copy) {
+L2Projection::L2Projection(const L2Projection& copy) {
     projection = copy.projection;
     forceFunction = copy.forceFunction;
     SolutionExact = copy.SolutionExact;
@@ -30,7 +30,7 @@ L2Projection::L2Projection(const L2Projection &copy) {
 
 }
 
-L2Projection &L2Projection::operator=(const L2Projection &copy) {
+L2Projection& L2Projection::operator=(const L2Projection& copy) {
     projection = copy.projection;
     forceFunction = copy.forceFunction;
     SolutionExact = copy.SolutionExact;
@@ -40,7 +40,7 @@ L2Projection &L2Projection::operator=(const L2Projection &copy) {
     return *this;
 }
 
-L2Projection *L2Projection::Clone() const {
+L2Projection* L2Projection::Clone() const {
     return new L2Projection(*this);
 }
 
@@ -51,57 +51,60 @@ MatrixDouble L2Projection::GetProjectionMatrix() const {
     return projection;
 }
 
-void L2Projection::SetProjectionMatrix(const MatrixDouble &proj) {
+void L2Projection::SetProjectionMatrix(const MatrixDouble& proj) {
     projection = proj;
 }
 
-void L2Projection::Contribute(IntPointData &data, double weight, MatrixDouble &EK, MatrixDouble &EF) const {
-
+void L2Projection::Contribute(IntPointData& data, double weight, MatrixDouble& EK, MatrixDouble& EF) const {
     int nstate = this->NState();
-    if(nstate != 1)
-    {
+    auto nshape = data.phi.size();
+
+    if (nstate != 1) {
         std::cout << "Please implement me\n";
         DebugStop();
     }
-    auto nshape = data.phi.size();
-    if(EK.rows() != nshape || EF.rows() != nshape)
+    if (EK.rows() != nshape || EF.rows() != nshape)
     {
         DebugStop();
     }
 
     VecDouble result(nstate);
-    result[0] = Val2()(0,0);
+    result[0] = Val2()(0, 0);
     MatrixDouble deriv(data.x.size(), nstate);
     deriv.setZero();
-    
-    if(SolutionExact)
+
+    if (SolutionExact)
     {
         SolutionExact(data.x, result, deriv);
+        if (this->GetBCType() == 1) {
+            std::cout << "Please implement me\n";
+            DebugStop();
+        }
+
     }
 
-    //+++++++++++++++++
-    // Please implement me
-    std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-    DebugStop();
 
     switch (this->GetBCType()) {
 
-        case 0:
-        {
-            // Your code here
-            break;
-        }
+    case 0:
+    {
+        EF += (MathStatement::gBigNumber * result[0] * weight) * data.phi;
+        EK += (MathStatement::gBigNumber * weight) * data.phi * data.phi.transpose();
 
-        case 1:
-        {
-            // Your code here
-            break;
-        }
+        break;
+    }
 
-        default:
-        {
-            std::cout << __PRETTY_FUNCTION__ << " at line " << __LINE__ << " not implemented\n";
-        }
+    case 1:
+    {
+        EF += (result[0] * weight) * data.phi;
+        break;
+    }
+
+    default:
+    {
+        //std::cout << _PRETTY_FUNCTION_ << " at line " << _LINE_ << " not implemented\n";
+
+    }
     }
     //+++++++++++++++++
 }
@@ -110,7 +113,7 @@ int L2Projection::NEvalErrors() const {
     return 3;
 }
 
-void L2Projection::ContributeError(IntPointData &data, VecDouble &u_exact, MatrixDouble &du_exact, VecDouble &errors) const {
+void L2Projection::ContributeError(IntPointData& data, VecDouble& u_exact, MatrixDouble& du_exact, VecDouble& errors) const {
     return;
 }
 
@@ -123,7 +126,7 @@ int L2Projection::VariableIndex(const PostProcVar var) const {
     return 0;
 }
 
-L2Projection::PostProcVar L2Projection::VariableIndex(const std::string & name) {
+L2Projection::PostProcVar L2Projection::VariableIndex(const std::string& name) {
     if (!strcmp("Solution", name.c_str())) return ESol;
     if (!strcmp("Derivative", name.c_str())) return EDSol;
 
@@ -141,7 +144,7 @@ int L2Projection::NSolutionVariables(const PostProcVar var) {
     return 0;
 }
 
-void L2Projection::PostProcessSolution(const IntPointData &data, const int var, VecDouble &Solout) const {
+void L2Projection::PostProcessSolution(const IntPointData& data, const int var, VecDouble& Solout) const {
     VecDouble sol = data.solution;
     int solsize = sol.size();
     int rows = data.dsoldx.rows();
@@ -152,36 +155,44 @@ void L2Projection::PostProcessSolution(const IntPointData &data, const int var, 
     int nstate = this->NState();
 
     switch (var) {
-        case 0: //None
-        {
-            std::cout << " Var index not implemented " << std::endl;
-            DebugStop();
-        }
+    case 0: //None
+    {
+        std::cout << " Var index not implemented " << std::endl;
+        DebugStop();
+    }
+    case 1: //ESol
+    {
+        //+++++++++++++++++
+        // Please implement me
+        Solout.resize(nstate);
+        for (int i = 0; i < nstate; i++) {
+            Solout[i] = sol[i];
 
-        case 1: //ESol
-        {
-            //+++++++++++++++++
-            // Please implement me
-            std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-            DebugStop();
-            //+++++++++++++++++
         }
-            break;
+        //+++++++++++++++++
+    }
+    break;
 
-        case 2: //EDSol
-        {
-            //+++++++++++++++++
-            // Please implement me
-            std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-            DebugStop();
-            //+++++++++++++++++
-        }
-            break;
+    case 2: //EDSol
+    {
+        //+++++++++++++++++
+        // Please implement me
 
-        default:
-        {
-            std::cout << " Var index not implemented " << std::endl;
-            DebugStop();
+        Solout.resize(rows * cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Solout[i * cols + j] = gradu(i, j);
+            }
+
         }
+        //+++++++++++++++++
+    }
+    break;
+
+    default:
+    {
+        std::cout << " Var index not implemented " << std::endl;
+        DebugStop();
+    }
     }
 }

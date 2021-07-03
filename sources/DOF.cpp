@@ -9,14 +9,14 @@
 DOF::DOF() {
 }
 
-DOF::DOF(const DOF &copy) {
+DOF::DOF(const DOF& copy) {
     firstequation = copy.firstequation;
     nshape = copy.nshape;
     nstate = copy.nstate;
     order = copy.order;
 }
 
-DOF &DOF::operator=(const DOF &copy) {
+DOF& DOF::operator=(const DOF& copy) {
     firstequation = copy.firstequation;
     nshape = copy.nshape;
     nstate = copy.nstate;
@@ -27,7 +27,7 @@ DOF &DOF::operator=(const DOF &copy) {
 DOF::~DOF() {
 }
 
-int64_t DOF::GetFirstEquation() const{
+int64_t DOF::GetFirstEquation() const {
     return firstequation;
 }
 
@@ -53,7 +53,7 @@ int DOF::GetOrder() const {
     return order;
 }
 
-void DOF::Print(const CompMesh &mesh, std::ostream & out) const {
+void DOF::Print(const CompMesh& mesh, std::ostream& out) const {
     int order = this->GetOrder();
     int nstate = this->GetNState();
     int nshape = this->GetNShape();
