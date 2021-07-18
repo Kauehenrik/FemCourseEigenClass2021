@@ -46,56 +46,50 @@ void Assemble::OptimizeBandwidth() {
 }
 
 void Assemble::Compute(MatrixDouble& globmat, MatrixDouble& rhs) {
-
-    auto neq = NEquations();
+    int64_t nelem = cmesh->GetGeoMesh()->NumElements();  
+    int neq = this->NEquations();
 
     globmat.resize(neq, neq);
     globmat.setZero();
     rhs.resize(neq, 1);
     rhs.setZero();
 
-    int64_t nelem = cmesh->GetGeoMesh()->NumElements();
+
     for (int el = 0; el < nelem; el++) {
         CompElement* cel = cmesh->GetElement(el);
 
         int nshape = cel->NShapeFunctions();
         int nstate = cel->GetStatement()->NState();
+
         MatrixDouble ek(nstate * nshape, nstate * nshape);
         MatrixDouble ef(nstate * nshape, 1);
+
         ek.setZero();
         ef.setZero();
 
         cel->CalcStiff(ek, ef);
-        //        
-        //        ek.Print();
-        //        ef.Print();
-                //+++++++++++++++++
-                // Please implement me
-        //std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-       // DebugStop();
-        //+++++++++++++++++
 
-        auto ndof = cel->NDOF();
-        VecInt iglob(ndof);
+        int ndof = cel->NDOF();  
+        VecInt iglob(neq, 1);
         int ni = 0;
-        for (auto i = 0; i < ndof; i++) {
-            auto dofindex = cel->GetDOFIndex(i);
-            const DOF& dof = cmesh->GetDOF(dofindex);
-            for (auto j = 0; j < dof.GetNShape() * dof.GetNState(); j++) {
+        for (int i = 0; i < ndof; i++) {
+            int dofindex = cel->GetDOFIndex(i);
+            DOF dof = cmesh->GetDOF(dofindex);
+            for (int j = 0; j < dof.GetNShape() * dof.GetNState(); j++) {
                 iglob[ni] = dof.GetFirstEquation() + j;
                 ni++;
-            }
-        }
-        for (auto i = 0; i < ek.rows(); i++) {
-            auto IG = iglob[i];
+            } 
+        } 
+
+        for (int i = 0; i < ek.rows(); i++) {
+            int IG = iglob[i];
             rhs(IG, 0) += ef(i, 0);
 
-            for (auto j = 0; i < ek.rows(); j++) {
-                auto JG = iglob[j];
+            for (int j = 0; j < ek.rows(); j++) {
+                int JG = iglob[j];
                 globmat(IG, JG) += ek(i, j);
-            }
-        }
-
+            } 
+        } 
+    
     }
-
 }

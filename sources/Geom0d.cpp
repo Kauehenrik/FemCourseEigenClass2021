@@ -37,7 +37,7 @@ void Geom0d::X(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x) {
 
 void Geom0d::GradX(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x, MatrixDouble& gradx) {
     if (xi.size() != Dimension) DebugStop();
-    if (x.size() != NodeCo.rows()) DebugStop();
+    if (x.size() < NodeCo.rows()) DebugStop();
     if (NodeCo.cols() != nCorners) DebugStop();
     int nrow = NodeCo.rows();
     int ncol = nCorners;

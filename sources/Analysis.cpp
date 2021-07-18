@@ -62,6 +62,7 @@ void Analysis::RunSimulation() {
     K.setZero();
     F.setZero();
 
+
     assemb.Compute(K, F);
     std::cout << "Assemble done!" << std::endl;
 
@@ -70,7 +71,7 @@ void Analysis::RunSimulation() {
 
     std::cout << "Computing solution..." << std::endl;
     Solution = K.fullPivLu().solve(F);
-    //    K.Solve_LU(F);
+    //K.Solve_LU(F);
     std::cout << "Solution computed!" << std::endl;
 
     int solsize = Solution.rows();

@@ -51,7 +51,7 @@ void GeomTetrahedron::Shape(const VecDouble& xi, VecDouble& phi, MatrixDouble& d
 
 void GeomTetrahedron::X(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x) {
     if (xi.size() != Dimension) DebugStop();
-    if (x.size() != NodeCo.rows()) DebugStop();
+    if (x.size() < NodeCo.rows()) DebugStop();
     if (NodeCo.cols() != nCorners) DebugStop();
     VecDouble phi(nCorners);
     MatrixDouble dphi(Dimension, nCorners);
@@ -71,7 +71,7 @@ void GeomTetrahedron::X(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x)
 
 void GeomTetrahedron::GradX(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x, MatrixDouble& gradx) {
     if (xi.size() != Dimension) DebugStop();
-    if (x.size() != NodeCo.rows()) DebugStop();
+    if (x.size() < NodeCo.rows()) DebugStop();
     if (NodeCo.cols() != nCorners) DebugStop();
     gradx.resize(3, 3);
     gradx.setZero();

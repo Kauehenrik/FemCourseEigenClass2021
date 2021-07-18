@@ -22,8 +22,8 @@ void IntRuleQuad::SetOrder(int order) {
     if (order < 0 || order > MaxOrder()) {
         DebugStop();
     }
-    switch (order)
-    {
+
+    switch (order) {
     case 0:
     case 1:
         fPoints.resize(1, 2);
@@ -39,12 +39,12 @@ void IntRuleQuad::SetOrder(int order) {
         fWeights.resize(4);
         fPoints(0, 0) = -1. / sqrt(3.);
         fPoints(0, 1) = -1. / sqrt(3.);
-        fPoints(1, 0) = 1. / sqrt(3.);
+        fPoints(1, 0) = +1. / sqrt(3.);
         fPoints(1, 1) = -1. / sqrt(3.);
         fPoints(2, 0) = -1. / sqrt(3.);
-        fPoints(2, 1) = 1. / sqrt(3.);
-        fPoints(3, 0) = 1. / sqrt(3.);
-        fPoints(3, 1) = 1. / sqrt(3.);
+        fPoints(2, 1) = +1. / sqrt(3.);
+        fPoints(3, 0) = +1. / sqrt(3.);
+        fPoints(3, 1) = +1. / sqrt(3.);
         fWeights[0] = 1.;
         fWeights[1] = 1.;
         fWeights[2] = 1.;
@@ -57,22 +57,22 @@ void IntRuleQuad::SetOrder(int order) {
         fWeights.resize(9);
         fPoints(0, 0) = -sqrt(3. / 5.);
         fPoints(0, 1) = -sqrt(3. / 5.);
-        fPoints(1, 0) = 0;
+        fPoints(1, 0) = 0.;
         fPoints(1, 1) = -sqrt(3. / 5.);
-        fPoints(2, 0) = sqrt(3. / 5.);
+        fPoints(2, 0) = +sqrt(3. / 5.);
         fPoints(2, 1) = -sqrt(3. / 5.);
         fPoints(3, 0) = -sqrt(3. / 5.);
-        fPoints(3, 1) = 0;
-        fPoints(4, 0) = 0;
-        fPoints(4, 1) = 0;
-        fPoints(5, 0) = sqrt(3. / 5.);
-        fPoints(5, 1) = 0;
+        fPoints(3, 1) = 0.;
+        fPoints(4, 0) = 0.;
+        fPoints(4, 1) = 0.;
+        fPoints(5, 0) = +sqrt(3. / 5.);
+        fPoints(5, 1) = 0.;
         fPoints(6, 0) = -sqrt(3. / 5.);
-        fPoints(6, 1) = sqrt(3. / 5.);
-        fPoints(7, 0) = 0;
-        fPoints(7, 1) = sqrt(3. / 5.);
-        fPoints(8, 0) = sqrt(3. / 5.);
-        fPoints(8, 1) = sqrt(3. / 5.);
+        fPoints(6, 1) = +sqrt(3. / 5.);
+        fPoints(7, 0) = 0.;
+        fPoints(7, 1) = +sqrt(3. / 5.);
+        fPoints(8, 0) = +sqrt(3. / 5.);
+        fPoints(8, 1) = +sqrt(3. / 5.);
         fWeights[0] = 25. / 81.;
         fWeights[1] = 40. / 81.;
         fWeights[2] = 25. / 81.;
@@ -89,6 +89,7 @@ void IntRuleQuad::SetOrder(int order) {
         break;
     }
 }
+
 void IntRuleQuad::gaulegQuad(const double x1, const double x2, VecDouble& co, VecDouble& w) {
     IntRule1d x;
     IntRule1d y;

@@ -7,10 +7,9 @@
 #include "CompElement.h"
 #include "GeoElement.h"
 #include "MathStatement.h"
-#include "CompMesh.h"
- ///\cond
+#include "CompMesh.h" 
 #include <math.h> 
-///\endcond
+
 using namespace std;
 
 CompElement::CompElement() {
@@ -169,48 +168,51 @@ void CompElement::Convert2Axes(const MatrixDouble& dphi, const MatrixDouble& jac
 }
 
 void CompElement::CalcStiff(MatrixDouble& ek, MatrixDouble& ef) const {
-    // First thing you need is the variational formulation
+    // First thing you need is the variational formulation;
+    // Without the material, you cant do the contribute calculation; Youll get an error.
     MathStatement* material = this->GetStatement();
     if (!material) {
         std::cout << "Error at CompElement::CalcStiff" << std::endl;
         return;
     }
     // Second, you should clear the matrices you're going to compute
-    ek.setZero();
-    ef.setZero();
-
-    //+++++++++++++++++
-    // Please implement me
-    //std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-    //DebugStop();
-    //+++++++++++++++++
 
     int nshape = NShapeFunctions();
     int nstate = material->NState();
-
     ek.resize(nstate * nshape, nstate * nshape);
     ef.resize(nstate * nshape, 1);
 
     ek.setZero();
     ef.setZero();
 
+    //+++++++++++++++++
+    // // Please implement me
+    // std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
+    // DebugStop();
+
+
+    int maxIntOrder = 5;
+    intrule->SetOrder(maxIntOrder);
+
     IntPointData data;
     this->InitializeIntPointData(data);
     double weight = 0.;
 
     IntRule* intrule = this->GetIntRule();
-    int intrulepoints = intrule->NPoints();
+    int nintpoints = intrule->NPoints();
 
-    for (int int_ind = 0; int_ind < intrulepoints; ++int_ind) {
+
+    for (int int_ind = 0; int_ind < nintpoints; int_ind++) {
         intrule->Point(int_ind, data.ksi, weight);
-
         this->ComputeRequiredData(data, data.ksi);
         weight *= fabs(data.detjac);
 
         material->Contribute(data, weight, ek, ef);
+
     }
 
 }
+
 
 void CompElement::EvaluateError(std::function<void(const VecDouble& loc, VecDouble& val, MatrixDouble& deriv) > fp, VecDouble& errors) const {
     MathStatement* material = this->GetStatement();
@@ -223,7 +225,6 @@ void CompElement::EvaluateError(std::function<void(const VecDouble& loc, VecDoub
     int NErrors = material->NEvalErrors();
     errors.resize(NErrors);
     errors.setZero();
-
 
     IntRule* intrule = this->GetIntRule();
     int maxIntOrder = intrule->MaxOrder();
@@ -278,3 +279,4 @@ void CompElement::Solution(VecDouble& intpoint, int var, VecDouble& sol) const {
 
     material->PostProcessSolution(data, var, sol);
 }
+

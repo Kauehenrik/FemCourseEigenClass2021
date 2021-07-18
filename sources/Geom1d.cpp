@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 #include "Geom1d.h"
 
 Geom1d::Geom1d() {
@@ -21,41 +17,44 @@ Geom1d& Geom1d::operator=(const Geom1d& copy) {
 }
 
 void Geom1d::Shape(const VecDouble& xi, VecDouble& phi, MatrixDouble& dphi) {
-    if (xi.size() != Dimension || phi.size() != nCorners || dphi.rows() != Dimension || dphi.cols() != nCorners) {
-        DebugStop();
-    }
+    if (xi.size() != Dimension || phi.size() != nCorners || dphi.rows() != Dimension || dphi.cols() != nCorners) { DebugStop(); }
 
     double qsi = xi[0];
+    phi.resize(2);
+    dphi.resize(1, 2);
 
-    phi[0] = (1.0 - qsi) / 2.;
-    phi[1] = (1.0 + qsi) / 2.;
+    phi[0] = (1. - qsi) / 2.;
+    phi[1] = (1. + qsi) / 2.;
 
     dphi(0, 0) = -1. / 2.;
     dphi(0, 1) = 1. / 2.;
 }
 
 void Geom1d::X(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x) {
-    if (xi.size() != Dimension)     DebugStop();
+
+    if (xi.size() != Dimension) DebugStop();
     if (x.size() < NodeCo.rows()) DebugStop();
-    if (NodeCo.cols() != nCorners)  DebugStop();
+    if (NodeCo.cols() != nCorners) DebugStop();
 
     int nrow = NodeCo.rows();
+    int ncol = NodeCo.cols();
 
     if (x.size() < nrow) {
         x.resize(nrow);
     }
+
     x.setZero();
 
-    for (int i = 0; i < nrow; i++)
-    {
+    for (int i = 0; i < nrow; i++) {
         x[i] = NodeCo(i, 0) * (1. - xi[0]) * 0.5 + NodeCo(i, 1) * (1. + xi[0]) * 0.5;
     }
+
 }
 
 void Geom1d::GradX(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x, MatrixDouble& gradx) {
-    if (xi.size() != Dimension)     DebugStop();
-    if (x.size() != NodeCo.rows()) DebugStop();
-    if (NodeCo.cols() != nCorners)  DebugStop();
+    if (xi.size() != Dimension) DebugStop();
+    if (x.size() < NodeCo.rows()) DebugStop();
+    if (NodeCo.cols() != nCorners) DebugStop();
 
     int nrow = NodeCo.rows();
     int ncol = NodeCo.cols();
@@ -63,25 +62,22 @@ void Geom1d::GradX(const VecDouble& xi, MatrixDouble& NodeCo, VecDouble& x, Matr
     gradx.resize(nrow, 1);
     gradx.setZero();
 
-    x.resize(nrow);
-    x.setZero();
-    X(xi, NodeCo, x);
-
-    VecDouble phi(2);
-    MatrixDouble dphi(Dimension, 2);
-    Shape(xi, phi, dphi);
-
-    for (int i = 0; i < ncol; i++)
-    {
-        for (int j = 0; j < nrow; j++)
-        {
-            gradx(j, 0) += NodeCo(j, i) * dphi(0, i);
-        }
+    if (x.size() < nrow) {
+        x.resize(nrow);
     }
+    x.setZero();
+
+    for (int i = 0; i < nrow; i++) {
+        x[i] = NodeCo(i, 0) * (1. - xi[0]) * 0.5 + NodeCo(i, 1) * (1. + xi[0]) * 0.5;
+        gradx(i, 0) = NodeCo(i, 0) * (-0.5) + NodeCo(i, 1) * 0.5;
+    }
+
 }
 
 void Geom1d::SetNodes(const VecInt& nodes) {
+
     if (nodes.rows() != 2) DebugStop();
+
     fNodeIndices = nodes;
 }
 
@@ -107,3 +103,4 @@ void Geom1d::SetNeighbour(int side, const GeoElementSide& neighbour) {
     if (side < 0 || side > 2) DebugStop();
     fNeighbours[side] = neighbour;
 }
+

@@ -28,74 +28,96 @@
 #include "IntRule.h"
 #include "PostProcessTemplate.h"
 #include "Poisson.h"
+#include "VTKGeoMesh.h"
 
 using std::cout;
 using std::endl;
 using std::cin;
 
-void exact(const VecDouble &point,VecDouble &val, MatrixDouble &deriv);
+void exact(const VecDouble& point, VecDouble& val, MatrixDouble& deriv);
 
-int main ()
+int main()
 {
     GeoMesh gmesh;
     ReadGmsh read;
-    std::string filename("oneD.msh");
-#ifdef MACOSX
-    filename = "../"+filename;
-#endif
-    read.Read(gmesh,filename);
+
+    /*
+    Malha 1D
+    std::string filename("1.msh");
+    std::string filename("2.msh");
+    std::string filename("3.msh");
+    std::string filename("4.msh");
+    std::string filename("5.msh");
+    std::string filename("6.msh");
+    */
+    std::string filename("6.msh");
+
+    read.Read(gmesh, filename);
 
     CompMesh cmesh(&gmesh);
-    MatrixDouble perm(3,3);
+    MatrixDouble perm(3, 3);
     perm.setZero();
-    perm(0,0) = 1.;
-    perm(1,1) = 1.;
-    perm(2,2) = 1.;
-    Poisson *mat1 = new Poisson(1,perm);
+    perm(0, 0) = 1.;
+    perm(1, 1) = 1.;
+    perm(2, 2) = 1.;
+    Poisson* mat1 = new Poisson(1, perm);
+    mat1->SetExactSolution(exact);
     mat1->SetDimension(1);
-    
-    auto force = [](const VecDouble &x, VecDouble &res)
+
+
+    auto force = [](const VecDouble& x, VecDouble& res)
     {
-        res[0] = 1.;
+        res[0] = 2.;
     };
+
     mat1->SetForceFunction(force);
-    MatrixDouble proj(1,1),val1(1,1),val2(1,1);
+    MatrixDouble proj(1, 1), val1(1, 1), val2(1, 1);
     proj.setZero();
     val1.setZero();
     val2.setZero();
-    L2Projection *bc_linha = new L2Projection(0,2,proj,val1,val2);
-    L2Projection *bc_point = new L2Projection(0,3,proj,val1,val2);
-    std::vector<MathStatement *> mathvec = {0,mat1,bc_point,bc_linha};
+    L2Projection* bc_linha = new L2Projection(0, 2, proj, val1, val2);
+    L2Projection* bc_point = new L2Projection(0, 3, proj, val1, val2);
+    std::vector<MathStatement*> mathvec = { 0,mat1,bc_linha,bc_point };
     cmesh.SetMathVec(mathvec);
-    cmesh.SetDefaultOrder(2);
+    cmesh.SetDefaultOrder(1);
     cmesh.AutoBuild();
     cmesh.Resequence();
 
-    
-    
-    Analysis Analysis(&cmesh);
-    Analysis.RunSimulation();
-    
+
+    Analysis AnalysisLoc(&cmesh);
+    AnalysisLoc.RunSimulation();
+
+
     PostProcessTemplate<Poisson> postprocess;
     postprocess.SetExact(exact);
-    
+
+
+
     VecDouble errvec;
-    errvec = Analysis.PostProcessError(std::cout, postprocess);
-    
-    
+    errvec = AnalysisLoc.PostProcessError(std::cout, postprocess);
+
+    /*
+   Malha 1D
+   std::string filenamevtk("1.vtk");
+   std::string filenamevtk("2.vtk");
+   std::string filenamevtk("3.vtk");
+   std::string filenamevtk("4.vtk");
+   std::string filenamevtk("5.vtk");
+   std::string filenamevtk("6.vtk");
+   */
+    std::string filenamevtk("6.vtk");
+
+    VTKGeoMesh::PrintCMeshVTK(&cmesh, 2, filenamevtk);
+
     return 0;
 }
-void exact(const VecDouble &point,VecDouble &val, MatrixDouble &deriv){
 
-    deriv(0,0) = 4-point[0];
-    val[0]=point[0]*(8.-point[0])/2.;
+
+void exact(const VecDouble& point, VecDouble& val, MatrixDouble& deriv) {
+
+    deriv(0, 0) = 4. - 2. * point[0];
+    val[0] = point[0] * (4. - point[0]);
     return;
-    double E=exp(1.0);
-    VecDouble x(1);
-    x[0]=point[0];
-    
-    val[0]=(30. + 100.*pow(E,100.) - 130.*pow(E,10.*x[0]) - 3*x[0] + 3*pow(E,100.)*x[0])/(10.*(-1. + pow(E,100.)));
-    deriv(0,0)=(-3. + 3*pow(E,100) - 1300*pow(E,10*x[0]))/(10.*(-1 + pow(E,100)));
-}
 
+}
 

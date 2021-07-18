@@ -5,10 +5,9 @@
  */
 
 #include "Poisson.h"
- ///\cond
 #include <functional>
 #include <string.h>
-///\endcond
+
 
 Poisson::Poisson() {
 }
@@ -128,6 +127,8 @@ void Poisson::Contribute(IntPointData& data, double weight, MatrixDouble& EK, Ma
     MatrixDouble axes = data.axes;
     MatrixDouble dphi2, dphi3;
 
+
+    int nstate = this->NState();
     dphi2 = data.axes.transpose() * data.dphidx;
     dphi3 = dphi2.transpose();
 
@@ -135,29 +136,31 @@ void Poisson::Contribute(IntPointData& data, double weight, MatrixDouble& EK, Ma
     perm = this->GetPermeability();
     double res = 0.;
 
+
     auto force = this->GetForceFunction();
-    if (force)
-    {
-        VecDouble resloc(1);
+    if (force) {
+        VecDouble resloc(nstate);
         force(data.x, resloc);
         res = resloc[0];
     }
 
-
+    // -u'' = fx
     EF += phi * (res * weight);
     EK += dphi3 * perm * dphi2 * weight;
+
+    //  -u''+ u = fx
+    //  EF += phi * (res * weight);
+    //  EK += (dphi3 * perm * dphi2 + phi * phi.transpose()) * weight;
 
 }
 
 void Poisson::PostProcessSolution(const IntPointData& data, const int var, VecDouble& Solout) const {
-    /*
-     VecDouble sol = data.solution;
-     int solsize = sol.size();
-     int rows = data.dsoldx.rows();
-     int cols = data.dsoldx.cols();
-     MatrixDouble gradu(rows, cols);
-     gradu = data.dsoldx;
-     */
+    VecDouble sol = data.solution;
+    int solsize = sol.size();
+    int rows = data.dsoldx.rows();
+    int cols = data.dsoldx.cols();
+    MatrixDouble gradu(rows, cols);
+    gradu = data.dsoldx;
 
     MatrixDouble gradudx, flux;
     gradudx = data.axes.transpose() * data.dsoldx;
@@ -170,20 +173,14 @@ void Poisson::PostProcessSolution(const IntPointData& data, const int var, VecDo
     case 0: //None
     {
         std::cout << " Var index not implemented " << std::endl;
-        return;
         DebugStop();
+
     }
 
     case 1: //ESol
     {
-        Solout = data.solution;
-
-        //+++++++++++++++++
-        // Please implement me
-        //std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-        //return;
-        //DebugStop();
-        //+++++++++++++++++
+        Solout.resize(solsize);
+        Solout = sol;
     }
     break;
 
@@ -194,12 +191,6 @@ void Poisson::PostProcessSolution(const IntPointData& data, const int var, VecDo
             Solout[i] = gradudx(i, 0);
         }
 
-        //+++++++++++++++++
-        // Please implement me
-        //std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-        //return;
-        //DebugStop();
-        //+++++++++++++++++
     }
     break;
     case 3: //EFlux
@@ -209,61 +200,40 @@ void Poisson::PostProcessSolution(const IntPointData& data, const int var, VecDo
             Solout[i] = flux(i, 0);
         }
 
-
-        //+++++++++++++++++
-        // Please implement me
-        //std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-        //DebugStop();
-        //+++++++++++++++++
     }
     break;
 
     case 4: //EForce
     {
+
         Solout.resize(nstate);
-        VecDouble result(nstate);
-        this->forceFunction(data.x, result);
-        for (int i = 0; i < nstate; i++) {
-            Solout[i] = result[i];
-        }
+        if (forceFunction) this->forceFunction(data.x, Solout);
+        else Solout.setZero();
     }
     break;
 
     case 5: //ESolExact
     {
-
         Solout.resize(nstate);
         VecDouble sol(nstate);
         MatrixDouble dsol(3, nstate);
         if (SolutionExact) this->SolutionExact(data.x, Solout, dsol);
         else Solout.setZero();
 
-
-        //+++++++++++++++++
-        // Please implement me
-        //std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-        //DebugStop();
-        //+++++++++++++++++
     }
     break;
     case 6: //EDSolExact
     {
-
-        Solout.resize(nstate);
+        //+++++++++++++++++
+        Solout.resize(3);
         VecDouble sol(nstate);
         MatrixDouble dsol(3, nstate);
-        if (SolutionExact) this->SolutionExact(data.x, Solout, dsol);
-        else Solout.setZero();
+        if (SolutionExact) this->SolutionExact(data.x, sol, dsol);
+        else dsol.setZero();
 
         for (int i = 0; i < 3; i++) {
             Solout[i] = dsol(i, 0);
         }
-
-
-        //+++++++++++++++++
-        // Please implement me
-        //std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-        //DebugStop();
         //+++++++++++++++++
     }
     break;
@@ -286,3 +256,5 @@ double Poisson::Inner(MatrixDouble& S, MatrixDouble& T) const {
     }
     return inner;
 }
+
+
