@@ -177,30 +177,24 @@ void CompElement::CalcStiff(MatrixDouble& ek, MatrixDouble& ef) const {
     }
     // Second, you should clear the matrices you're going to compute
 
-    int nshape = NShapeFunctions();
-    int nstate = material->NState();
-    ek.resize(nstate * nshape, nstate * nshape);
-    ef.resize(nstate * nshape, 1);
+    //int nshape = NShapeFunctions();
+    //int nstate = material->NState();
+    //ek.resize(nstate * nshape, nstate * nshape);
+    //ef.resize(nstate * nshape, 1);
 
     ek.setZero();
     ef.setZero();
 
-    //+++++++++++++++++
-    // // Please implement me
-    // std::cout << "\nPLEASE IMPLEMENT ME\n" << __PRETTY_FUNCTION__ << std::endl;
-    // DebugStop();
 
-
+    IntRule* intrule = this->GetIntRule();
     int maxIntOrder = 5;
     intrule->SetOrder(maxIntOrder);
 
     IntPointData data;
     this->InitializeIntPointData(data);
-    double weight = 0.;
-
-    IntRule* intrule = this->GetIntRule();
     int nintpoints = intrule->NPoints();
-
+  
+    double weight = 0.;
 
     for (int int_ind = 0; int_ind < nintpoints; int_ind++) {
         intrule->Point(int_ind, data.ksi, weight);
@@ -209,6 +203,10 @@ void CompElement::CalcStiff(MatrixDouble& ek, MatrixDouble& ef) const {
 
         material->Contribute(data, weight, ek, ef);
 
+        //std::cout << "\n\nek \n" << ek << std::endl;
+        
+        //std::cout << "ef \n" << ef << std::endl;
+        
     }
 
 }
@@ -257,6 +255,8 @@ void CompElement::EvaluateError(std::function<void(const VecDouble& loc, VecDoub
 
         for (int ier = 0; ier < NErrors; ier++)
             errors[ier] += weight * values[ier];
+
+            ///std::cout << "\nerrors \n" << errors << std::endl;
     }
 
     for (int ier = 0; ier < NErrors; ier++) {
