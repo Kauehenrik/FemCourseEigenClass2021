@@ -65,7 +65,7 @@ void ShapeQuad::Shape(const VecDouble& xi, VecInt& orders, VecDouble& phi, Matri
 
             phi[count] = 4. * phi[id] * (phi[id2] + phi[id3]);
             dphi(0, count) = 4. * (dphi(0, id) * (phi[id2] + phi[id3]) + phi[id] * (dphi(0, id2) + dphi(0, id3)));
-            dphi(0, count) = 4. * (dphi(1, id) * (phi[id2] + phi[id3]) + phi[id] * (dphi(1, id2) + dphi(1, id3)));
+            dphi(1, count) = 4. * (dphi(1, id) * (phi[id2] + phi[id3]) + phi[id] * (dphi(1, id2) + dphi(1, id3)));
             count++;
         }
         else if (orders[is] != 1) DebugStop();

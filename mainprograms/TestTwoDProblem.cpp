@@ -79,7 +79,7 @@ int main()
     std::string filename("quad5.msh");
     std::string filename("quad6.msh");
     */
-    std::string filename("trian4.msh");
+    std::string filename("quad4.msh");
     read.Read(gmesh, filename);
 
     CompMesh cmesh(&gmesh);
@@ -148,7 +148,7 @@ int main()
    std::string filenamevtk("quad5.vtk");
    std::string filenamevtk("quad6.vtk");
    */
-    std::string filenamevtk("trian4.vtk");
+    std::string filenamevtk("quad4.vtk");
 
     locAnalysis.PostProcessSolution(filenamevtk, postprocess);
 
