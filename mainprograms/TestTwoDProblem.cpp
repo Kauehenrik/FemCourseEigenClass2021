@@ -79,7 +79,7 @@ int main()
     std::string filename("quad5.msh");
     std::string filename("quad6.msh");
     */
-    std::string filename("quad4.msh");
+    std::string filename("trian6.msh");
     read.Read(gmesh, filename);
 
     CompMesh cmesh(&gmesh);
@@ -114,10 +114,12 @@ int main()
     PostProcessTemplate<Poisson> postprocess;
     auto exact = [](const VecDouble& x, VecDouble& val, MatrixDouble& deriv)
     {
+        
         val[0] = (-1. + x[0]) * x[0] * (-1. + x[1]) * x[1] * (10. * cos(15. * x[1]) + 3. * sin(15. * x[0]));
-        deriv(0, 0) = (-1. + x[0]) * x[0] * (-1. + x[1]) * x[1] * (10. * cos(15. * x[1]) + 3. * sin(15. * x[0]));
-        deriv(1, 0) = (-1. + x[0]) * x[0] * (10. * (-1 + 2. * x[1]) * cos(15 * x[1]) + 3 * (-1. + 2. * x[1]) * sin(15. * x[0]) - 150. * (-1. + x[1]) * x[1] * sin(15. * x[1]));
-    };
+
+        deriv(0, 0) = 45. * (-1. + x[0]) * x[0] * (-1. + x[1]) * x[1] * cos(15. * x[0]) + (-1. + x[0]) * (-1. + x[1]) * x[1] * (10. * cos(15. * x[1]) + 3. * sin(15. * x[0])) + x[0] * (-1. + x[1]) * x[1] * (10. * cos(15. * x[1]) + 3. * sin(15. * x[0]));
+        deriv(1, 0) = (-1. + x[0]) * x[0] * (-1. + x[1]) * (10. * cos(15. * x[1]) + 3. * sin(15. * x[0])) + (-1. + x[0]) * x[0] * x[1] * (10. * cos(15. * x[1]) + 3. * sin(15 * x[0])) - 150.* (-1. + x[0]) * x[0] * (-1. + x[1]) * x[1] * sin(15. * x[1]);
+         };
 
     postprocess.AppendVariable("Sol");
     postprocess.AppendVariable("DSol");
@@ -148,7 +150,7 @@ int main()
    std::string filenamevtk("quad5.vtk");
    std::string filenamevtk("quad6.vtk");
    */
-    std::string filenamevtk("quad4.vtk");
+    std::string filenamevtk("trian6.vtk");
 
     locAnalysis.PostProcessSolution(filenamevtk, postprocess);
 
